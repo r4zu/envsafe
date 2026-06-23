@@ -1,0 +1,26 @@
+{
+  "name": "@r4zu/envsafe",
+  "version": "1.0.0",
+  "description": "Secure and collaborative .env file manager CLI tool",
+  "main": "index.js",
+  "bin": {
+    "envsafe": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [
+    "dotenv",
+    "env",
+    "cli",
+    "security",
+    "aes-256",
+    "sync",
+    "github"
+  ],
+  "author": "Josue Ordonez (r4zu)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}

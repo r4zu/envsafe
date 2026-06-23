@@ -1,6 +1,7 @@
 # Compiled binaries
 envsafe
 dist/
+npm/bin/
 
 # Env files (keep template examples safe)
 *.env
