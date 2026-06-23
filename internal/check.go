@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// getEnvKeys parses an env file and returns a set (map) of its keys.
 func getEnvKeys(filePath string) (map[string]bool, error) {
 	keys := make(map[string]bool)
 
@@ -20,7 +19,6 @@ func getEnvKeys(filePath string) (map[string]bool, error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
@@ -43,7 +41,6 @@ func CheckEnv(sourcePath string) error {
 	}
 	targetPath := sourcePath + ".example"
 
-	// Ensure both files exist
 	if _, err := os.Stat(sourcePath); os.IsNotExist(err) {
 		return fmt.Errorf("local file '%s' not found", sourcePath)
 	}
@@ -69,26 +66,33 @@ func CheckEnv(sourcePath string) error {
 	}
 
 	if len(missingKeys) > 0 {
-		fmt.Printf("⚠️  Warning: The following keys are defined in %s but missing from %s:\n", targetPath, sourcePath)
+		fmt.Printf("\n⚠️  %s: The following keys are defined in %s but missing from %s:\n",
+			Bold(Yellow("Warning")),
+			Cyan(targetPath),
+			Cyan(sourcePath),
+		)
 		for _, key := range missingKeys {
-			fmt.Printf("\n   - %s\n\n", key)
+			fmt.Printf("   - %s\n", Bold(key))
 		}
 
 		err := promptAndAddKeys(sourcePath, missingKeys)
 		if err != nil {
 			return err
 		}
-
 		return nil
 	}
 
-	fmt.Printf("✅ Success: All keys from %s are present in %s!\n", targetPath, sourcePath)
+	fmt.Printf("✅ %s: All keys from %s are present in %s!\n",
+		Bold(Green("Success")),
+		Cyan(targetPath),
+		Cyan(sourcePath),
+	)
 	return nil
 }
 
 func promptAndAddKeys(sourcePath string, missingKeys []string) error {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("\nDo you want to add these missing keys to %s? (Y/n): ", sourcePath)
+	fmt.Printf("\nDo you want to add these missing keys to %s? (Y/n): ", Cyan(sourcePath))
 
 	response, err := reader.ReadString('\n')
 	if err != nil {
@@ -101,21 +105,20 @@ func promptAndAddKeys(sourcePath string, missingKeys []string) error {
 	}
 
 	if response != "y" && response != "yes" {
-		fmt.Println("Skipped adding keys.")
-
+		fmt.Println(Yellow("Skipped adding keys."))
 		return fmt.Errorf("configuration is incomplete")
 	}
 
 	file, err := os.OpenFile(sourcePath, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to open %s fot writing: %w", sourcePath, err)
+		return fmt.Errorf("failed to open %s for writing: %w", sourcePath, err)
 	}
 	defer file.Close()
 
 	file.WriteString("\n")
 
 	for _, key := range missingKeys {
-		fmt.Printf("Enter value for %s: ", key)
+		fmt.Printf("Enter value for %s: ", Bold(Cyan(key)))
 		val, err := reader.ReadString('\n')
 		if err != nil {
 			return err
@@ -128,6 +131,6 @@ func promptAndAddKeys(sourcePath string, missingKeys []string) error {
 		}
 	}
 
-	fmt.Println("✅ Keys successfully added to your local file!")
+	fmt.Println(Green("✅ Keys successfully added to your local file!"))
 	return nil
 }

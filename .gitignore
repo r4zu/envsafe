@@ -1,0 +1,12 @@
+# Binary builds                                                                                                                                              
+envsafe                                                                                                                                                      
+dist/                                                                                                                                                        
+                                                                                                                                                                
+# Test env files                                                                                                                                             
+*.env                                                                                                                                                        
+!*.env.example                                                                                                                                               
+                                                                                                                                                                
+# Go workspaces & tools                                                                                                                                      
+.idea/                                                                                                                                                       
+.vscode/                                                                                                                                                     
+go.work

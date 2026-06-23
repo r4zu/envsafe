@@ -46,7 +46,7 @@ func EncryptEnv(sourcePath string) error {
 		return fmt.Errorf("failed to read %s: %w", sourcePath, err)
 	}
 
-	passphrase, err := getPassphrase("Enter passphrase to encrypt: ")
+	passphrase, err := getPassphrase(fmt.Sprintf("Enter passphrase to encrypt %s: ", Cyan(sourcePath)))
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func EncryptEnv(sourcePath string) error {
 		return fmt.Errorf("failed to write encrypted file: %w", err)
 	}
 
-	fmt.Printf("🔒 Success! File encrypted and saved to %s\n", targetPath)
+	fmt.Printf("🔒 %s! File encrypted and saved to %s\n", Bold(Green("Success")), Cyan(targetPath))
 	return nil
 }
 
@@ -94,7 +94,7 @@ func DecryptEnv(targetPath string) error {
 		return fmt.Errorf("failed to read %s: %w", sourcePath, err)
 	}
 
-	passphrase, err := getPassphrase("Enter passphrase to decrypt: ")
+	passphrase, err := getPassphrase(fmt.Sprintf("Enter passphrase to decrypt %s: ", Cyan(sourcePath)))
 	if err != nil {
 		return err
 	}
@@ -128,6 +128,6 @@ func DecryptEnv(targetPath string) error {
 		return fmt.Errorf("failed to write decrypted file: %w", err)
 	}
 
-	fmt.Printf("🔓 Success! Decrypted configuration written to %s\n", targetPath)
+	fmt.Printf("🔓 %s! Decrypted configuration written to %s\n", Bold(Green("Success")), Cyan(targetPath))
 	return nil
 }

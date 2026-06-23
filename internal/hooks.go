@@ -15,7 +15,6 @@ const hookScript = `#!/bin/sh
     if command -v envsafe >/dev/null 2>&1; then                                                                                                                  
         envsafe hook verify                                                                                                                                      
     else                                                                                                                                                         
-        # Fallback for development if main.go exists in the root                                                                                                 
         if [ -f "main.go" ]; then                                                                                                                                
             go run . hook verify                                                                                                                                 
         else                                                                                                                                                     
@@ -39,7 +38,7 @@ func InstallHook() error {
 	if _, err := os.Stat(hookPath); err == nil {
 		content, readErr := os.ReadFile(hookPath)
 		if readErr == nil && strings.Contains(string(content), "envsafe") {
-			fmt.Println("✅ envsafe pre-commit hook is already installed!")
+			fmt.Println(Green("✅ envsafe pre-commit hook is already installed!"))
 			return nil
 		}
 		return fmt.Errorf("a pre-commit hook already exists at %s. Please merge it manually or remove it to install envsafe", hookPath)
@@ -50,7 +49,7 @@ func InstallHook() error {
 		return fmt.Errorf("failed to write hook file: %w", err)
 	}
 
-	fmt.Println("🚀 Pre-commit hook successfully installed!")
+	fmt.Println(Green("🚀 Pre-commit hook successfully installed!"))
 	return nil
 }
 
@@ -58,7 +57,7 @@ func UninstallHook() error {
 	hookPath := filepath.Join(".git", "hooks", "pre-commit")
 
 	if _, err := os.Stat(hookPath); os.IsNotExist(err) {
-		fmt.Println("ℹ️  No pre-commit hook found to uninstall.")
+		fmt.Println(Yellow("ℹ️  No pre-commit hook found to uninstall."))
 		return nil
 	}
 
@@ -72,11 +71,11 @@ func UninstallHook() error {
 		return fmt.Errorf("failed to remove hook: %w", err)
 	}
 
-	fmt.Println("🗑️  Pre-commit hook successfully uninstalled.")
+	fmt.Println(Green("🗑️  Pre-commit hook successfully uninstalled."))
 	return nil
 }
 
-func VerifyCommit() error {	
+func VerifyCommit() error {
 	cmd := exec.Command("git", "diff", "--cached", "--name-only")
 	outputBytes, err := cmd.Output()
 	if err != nil {
@@ -93,7 +92,6 @@ func VerifyCommit() error {
 		}
 
 		filename := filepath.Base(file)
-
 		if strings.HasPrefix(filename, ".env") &&
 			!strings.HasSuffix(filename, ".enc") &&
 			!strings.HasSuffix(filename, ".example") {
@@ -102,14 +100,16 @@ func VerifyCommit() error {
 	}
 
 	if len(blockedFiles) > 0 {
-		fmt.Println("❌ [envsafe] SECURITY WARNING: You are attempting to commit unencrypted environment files:")
+		fmt.Printf("❌ %s: You are attempting to commit unencrypted environment files:\n",
+			Bold(Red("[envsafe] SECURITY WARNING")),
+		)
 		for _, file := range blockedFiles {
-			fmt.Printf("   - %s\n", file)
+			fmt.Printf("   - %s\n", Red(file))
 		}
 		fmt.Println("\nActions required:")
-		fmt.Println("  1. Unstage these files: git restore --staged <file>")
-		fmt.Println("  2. Make sure they are added to your .gitignore file.")
-		fmt.Println("  3. Encrypt them using: envsafe encrypt <file>")
+		fmt.Printf("  1. Unstage these files: %s\n", Bold("git restore --staged <file>"))
+		fmt.Printf("  2. Make sure they are added to your %s file.\n", Bold(".gitignore"))
+		fmt.Printf("  3. Encrypt them using: %s\n", Bold("envsafe encrypt <file>"))
 		return fmt.Errorf("commit blocked for security reasons")
 	}
 
@@ -117,16 +117,19 @@ func VerifyCommit() error {
 	infoEnc, err2 := os.Stat(".env.enc")
 	if err1 == nil && err2 == nil {
 		if infoEnv.ModTime().After(infoEnc.ModTime()) {
-			fmt.Println("⚠️  [envsafe] Warning: .env has been modified since .env.enc was last updated.")
-			fmt.Println("   Remember to run 'envsafe encrypt' if you changed secrets!")
+			fmt.Printf("⚠️  %s: .env has been modified since .env.enc was last updated.\n",
+				Bold(Yellow("[envsafe]")),
+			)
+			fmt.Printf("   Remember to run '%s' if you changed secrets!\n", Bold("envsafe encrypt"))
 		}
 	}
 
 	if _, err := os.Stat(".env"); err == nil {
 		ignoreCmd := exec.Command("git", "check-ignore", "-q", ".env")
-
 		if ignoreErr := ignoreCmd.Run(); ignoreErr != nil {
-			fmt.Println("⚠️  [envsafe] Warning: .env is NOT ignored by git! Please add it to your .gitignore.")
+			fmt.Printf("⚠️  %s: .env is NOT ignored by git! Please add it to your .gitignore.\n",
+				Bold(Yellow("[envsafe]")),
+			)
 		}
 	}
 
