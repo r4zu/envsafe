@@ -1,6 +1,6 @@
 {
   "name": "@r4zu/envsafe",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Secure and collaborative .env file manager CLI tool",
   "main": "index.js",
   "bin": {
@@ -9,6 +9,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r4zu/envsafe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/r4zu/envsafe/issues"
+  },
+  "homepage": "https://github.com/r4zu/envsafe#readme",
   "keywords": [
     "dotenv",
     "env",
