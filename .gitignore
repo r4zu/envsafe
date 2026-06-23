@@ -1,12 +1,22 @@
-# Binary builds                                                                                                                                              
-envsafe                                                                                                                                                      
-dist/                                                                                                                                                        
-                                                                                                                                                                
-# Test env files                                                                                                                                             
-*.env                                                                                                                                                        
-!*.env.example                                                                                                                                               
-                                                                                                                                                                
-# Go workspaces & tools                                                                                                                                      
-.idea/                                                                                                                                                       
-.vscode/                                                                                                                                                     
-go.work
+# Compiled binaries
+envsafe
+dist/
+
+# Env files (keep template examples safe)
+*.env
+*.env.enc
+!*.env.example
+!*.env.*.example
+
+# Test files residue
+*_test.env
+*_test.env.*
+test.env
+test.env.example
+
+# IDEs & System files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.tmp
